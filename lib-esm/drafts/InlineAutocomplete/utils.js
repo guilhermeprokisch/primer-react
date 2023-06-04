@@ -14,6 +14,14 @@ const calculateSuggestionsQuery = (triggers, text, caretLocation) => {
     const character = text[i];
     if (singleWordTriggerTerminators.has(character)) potentialTriggers = potentialTriggers.filter(t => t.multiWord);
     if (multiWordTriggerTerminators.has(character)) potentialTriggers = potentialTriggers.filter(t => !t.multiWord);
+    for (const trigger of potentialTriggers.filter(t => t.triggerChar === '[[')) {
+      if (i > 0 && character === '[' && text[i - 1] === '[') {
+        return {
+          trigger,
+          query
+        };
+      }
+    }
     for (const trigger of potentialTriggers.filter(t => character === t.triggerChar)) {
       // Trigger chars must always be preceded by whitespace or be the first character in the input,
       // and even a multi-word query cannot start with whitespace

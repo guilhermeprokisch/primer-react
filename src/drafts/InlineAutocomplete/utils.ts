@@ -1,6 +1,6 @@
-import {Children, EventHandler, SyntheticEvent} from 'react'
+import { Children, EventHandler, SyntheticEvent } from 'react'
 
-import {ShowSuggestionsEvent, Suggestion, TextInputCompatibleChild, Trigger} from './types'
+import { ShowSuggestionsEvent, Suggestion, TextInputCompatibleChild, Trigger } from './types'
 
 const singleWordTriggerTerminators = new Set([' ', '\n'])
 const multiWordTriggerTerminators = new Set(['.', '\n'])
@@ -27,10 +27,16 @@ export const calculateSuggestionsQuery = (
     if (singleWordTriggerTerminators.has(character)) potentialTriggers = potentialTriggers.filter(t => t.multiWord)
     if (multiWordTriggerTerminators.has(character)) potentialTriggers = potentialTriggers.filter(t => !t.multiWord)
 
+    for (const trigger of potentialTriggers.filter(t => t.triggerChar === '[[')) {
+      if (i > 0 && character === '[' && text[i - 1] === '[') {
+        return { trigger, query }
+      }
+    }
+
     for (const trigger of potentialTriggers.filter(t => character === t.triggerChar)) {
       // Trigger chars must always be preceded by whitespace or be the first character in the input,
       // and even a multi-word query cannot start with whitespace
-      if ((i === 0 || isWhitespace(text[i - 1])) && !isWhitespace(query[0])) return {trigger, query}
+      if ((i === 0 || isWhitespace(text[i - 1])) && !isWhitespace(query[0])) return { trigger, query }
 
       potentialTriggers = potentialTriggers.filter(t => t !== trigger)
     }
@@ -91,8 +97,8 @@ export function requireChildrenToBeInput(
  */
 export const augmentHandler =
   <E extends SyntheticEvent>(...handlers: Array<EventHandler<E> | undefined>) =>
-  (event: E) => {
-    for (const handler of [...handlers].reverse()) {
-      if (!event.isDefaultPrevented()) handler?.(event)
+    (event: E) => {
+      for (const handler of [...handlers].reverse()) {
+        if (!event.isDefaultPrevented()) handler?.(event)
+      }
     }
-  }
