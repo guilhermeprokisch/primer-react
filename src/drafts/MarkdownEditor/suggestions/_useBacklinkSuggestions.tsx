@@ -13,7 +13,7 @@ export type Backlink = {
 }
 
 const trigger: Trigger = {
-  triggerChar: '&',
+  triggerChar: '[',
   multiWord: true,
 }
 
@@ -38,7 +38,7 @@ const backlinkToSuggestion = (backlink: Backlink): Suggestion => ({
       >
         <span dangerouslySetInnerHTML={{ __html: backlink.titleHtml }} />
       </Text>{' '}
-      <ActionList.Description>&{backlink.id}</ActionList.Description>
+      <ActionList.Description>[{backlink.id}</ActionList.Description>
     </ActionList.Item>
   ),
 })
