@@ -5270,8 +5270,12 @@
           "type": "SuggestionOptions<Mentionable>"
         },
         {
-          "name": "referenceSuggestions",
-          "type": "SuggestionOptions<Reference>"
+          "name": "referencesuggestions",
+          "type": "suggestionoptions<reference>"
+        },
+        {
+          "name": "backlinkgssuggestions",
+          "type": "suggestionoptions<backlink>"
         },
         {
           "name": "onUploadFile",

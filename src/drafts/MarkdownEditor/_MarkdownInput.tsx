@@ -1,13 +1,14 @@
-import {subscribe as subscribeToMarkdownPasting} from '@github/paste-markdown'
-import React, {forwardRef, useEffect, useMemo, useRef, useState} from 'react'
-import {useDynamicTextareaHeight} from '../hooks/useDynamicTextareaHeight'
-import InlineAutocomplete, {ShowSuggestionsEvent, Suggestions} from '../InlineAutocomplete'
-import Textarea, {TextareaProps} from '../../Textarea'
-import {Emoji, useEmojiSuggestions} from './suggestions/_useEmojiSuggestions'
-import {Mentionable, useMentionSuggestions} from './suggestions/_useMentionSuggestions'
-import {Reference, useReferenceSuggestions} from './suggestions/_useReferenceSuggestions'
-import {useRefObjectAsForwardedRef} from '../../hooks'
-import {SuggestionOptions} from './suggestions'
+import { subscribe as subscribeToMarkdownPasting } from '@github/paste-markdown'
+import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
+import { useDynamicTextareaHeight } from '../hooks/useDynamicTextareaHeight'
+import InlineAutocomplete, { ShowSuggestionsEvent, Suggestions } from '../InlineAutocomplete'
+import Textarea, { TextareaProps } from '../../Textarea'
+import { Emoji, useEmojiSuggestions } from './suggestions/_useEmojiSuggestions'
+import { Mentionable, useMentionSuggestions } from './suggestions/_useMentionSuggestions'
+import { Reference, useReferenceSuggestions } from './suggestions/_useReferenceSuggestions'
+import { Backlink, useBackLinksSuggestions } from './suggestions/_useBackLinksSuggestions'
+import { useRefObjectAsForwardedRef } from '../../hooks'
+import { SuggestionOptions } from './suggestions'
 
 interface MarkdownInputProps extends Omit<TextareaProps, 'onChange'> {
   value: string
@@ -22,6 +23,7 @@ interface MarkdownInputProps extends Omit<TextareaProps, 'onChange'> {
   emojiSuggestions?: SuggestionOptions<Emoji>
   mentionSuggestions?: SuggestionOptions<Mentionable>
   referenceSuggestions?: SuggestionOptions<Reference>
+  backlinkSuggestions?: SuggestionOptions<Backlink>
   minHeightLines: number
   maxHeightLines: number
   monospace: boolean
@@ -47,6 +49,7 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
       emojiSuggestions,
       mentionSuggestions,
       referenceSuggestions,
+      backlinkSuggestions,
       minHeightLines,
       maxHeightLines,
       visible,
@@ -59,15 +62,20 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
     const [suggestions, setSuggestions] = useState<Suggestions | null>(null)
     const [event, setEvent] = useState<ShowSuggestionsEvent | null>(null)
 
-    const {trigger: emojiTrigger, calculateSuggestions: calculateEmojiSuggestions} = useEmojiSuggestions(
+    const { trigger: emojiTrigger, calculateSuggestions: calculateEmojiSuggestions } = useEmojiSuggestions(
       emojiSuggestions ?? emptyArray,
     )
-    const {trigger: mentionsTrigger, calculateSuggestions: calculateMentionSuggestions} = useMentionSuggestions(
+    const { trigger: mentionsTrigger, calculateSuggestions: calculateMentionSuggestions } = useMentionSuggestions(
       mentionSuggestions ?? emptyArray,
     )
-    const {trigger: referencesTrigger, calculateSuggestions: calculateReferenceSuggestions} = useReferenceSuggestions(
+    const { trigger: referencesTrigger, calculateSuggestions: calculateReferenceSuggestions } = useReferenceSuggestions(
       referenceSuggestions ?? emptyArray,
     )
+
+    const { trigger: backlinksTrigger, calculateSuggestions: calculateBacklinkSuggestions } = useBackLinksSuggestions(
+      backlinkSuggestions ?? emptyArray,
+    )
+
 
     const triggers = useMemo(
       () => [mentionsTrigger, referencesTrigger, emojiTrigger],
@@ -91,7 +99,7 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
 
       // (prettier vs. eslint conflict)
       // eslint-disable-next-line @typescript-eslint/no-extra-semi
-      ;(async function () {
+      ; (async function() {
         lastEventRef.current = event
         setSuggestions('loading')
         if (event.trigger.triggerChar === emojiTrigger.triggerChar) {
@@ -100,6 +108,8 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
           setSuggestions(await calculateMentionSuggestions(event.query))
         } else if (event.trigger.triggerChar === referencesTrigger.triggerChar) {
           setSuggestions(await calculateReferenceSuggestions(event.query))
+        } else if (event.trigger.triggerChar === backlinksTrigger.triggerChar) {
+          setSuggestions(await calculateBacklinkSuggestions(event.query))
         }
       })()
     }, [
@@ -107,10 +117,12 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
       calculateEmojiSuggestions,
       calculateMentionSuggestions,
       calculateReferenceSuggestions,
+      calculateBacklinkSuggestions,
       // The triggers never actually change because they are statically defined
       emojiTrigger,
       mentionsTrigger,
       referencesTrigger,
+      backlinksTrigger,
     ])
 
     const ref = useRef<HTMLTextAreaElement>(null)
@@ -119,11 +131,11 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
     useEffect(() => {
       const subscription =
         ref.current &&
-        subscribeToMarkdownPasting(ref.current, {defaultPlainTextPaste: {urlLinks: pasteUrlsAsPlainText}})
+        subscribeToMarkdownPasting(ref.current, { defaultPlainTextPaste: { urlLinks: pasteUrlsAsPlainText } })
       return subscription?.unsubscribe
     }, [pasteUrlsAsPlainText])
 
-    const dynamicHeightStyles = useDynamicTextareaHeight({maxHeightLines, minHeightLines, elementRef: ref, value})
+    const dynamicHeightStyles = useDynamicTextareaHeight({ maxHeightLines, minHeightLines, elementRef: ref, value })
     const heightStyles = fullHeight ? {} : dynamicHeightStyles
 
     return (
@@ -132,7 +144,7 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
         suggestions={suggestions}
         onShowSuggestions={setEvent}
         onHideSuggestions={onHideSuggestions}
-        sx={{flex: 'auto'}}
+        sx={{ flex: 'auto' }}
         tabInsertsSuggestions
       >
         <Textarea
