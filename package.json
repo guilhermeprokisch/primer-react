@@ -63,7 +63,7 @@
     "size": "size-limit",
     "prepare": "husky install"
   },
-  "repository": "primer/react",
+  "repository": "guilhermeprokisch/primer-react",
   "keywords": [
     "react",
     "components",
