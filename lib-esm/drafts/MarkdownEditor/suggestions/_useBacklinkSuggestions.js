@@ -9,7 +9,7 @@ const trigger = {
   multiWord: true
 };
 const backlinkToSuggestion = backlink => ({
-  value: ` ${backlink.titleText} ]]`,
+  value: `${backlink.titleText}]]`,
   render: props => /*#__PURE__*/React__default.createElement(ActionList.Item, props, backlink.iconHtml && /*#__PURE__*/React__default.createElement(ActionList.LeadingVisual, null, /*#__PURE__*/React__default.createElement("span", {
     dangerouslySetInnerHTML: {
       __html: backlink.iconHtml
@@ -27,7 +27,7 @@ const backlinkToSuggestion = backlink => ({
     dangerouslySetInnerHTML: {
       __html: backlink.titleHtml
     }
-  })), ' ', /*#__PURE__*/React__default.createElement(ActionList.Description, null, "[[", backlink.id))
+  })), ' ')
 });
 const scoreSuggestion = (query, backlink) => {
   // fzy unituitively returns Infinity if the length of the item is less than or equal to the length of the query

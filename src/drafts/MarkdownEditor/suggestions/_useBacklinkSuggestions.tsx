@@ -18,7 +18,7 @@ const trigger: Trigger = {
 }
 
 const backlinkToSuggestion = (backlink: Backlink): Suggestion => ({
-  value: ` ${backlink.titleText} ]]`,
+  value: `${backlink.titleText}]]`,
   render: props => (
     <ActionList.Item {...props}>
       {backlink.iconHtml && (
@@ -38,7 +38,6 @@ const backlinkToSuggestion = (backlink: Backlink): Suggestion => ({
       >
         <span dangerouslySetInnerHTML={{ __html: backlink.titleHtml }} />
       </Text>{' '}
-      <ActionList.Description>[[{backlink.id}</ActionList.Description>
     </ActionList.Item>
   ),
 })
