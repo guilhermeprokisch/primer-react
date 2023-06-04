@@ -13,7 +13,7 @@ export type Backlink = {
 }
 
 const trigger: Trigger = {
-  triggerChar: '[',
+  triggerChar: '[[',
   multiWord: true,
 }
 

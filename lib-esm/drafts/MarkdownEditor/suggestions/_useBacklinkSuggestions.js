@@ -5,7 +5,7 @@ import { score } from 'fzy.js';
 import Text from '../../../Text/Text.js';
 
 const trigger = {
-  triggerChar: '[',
+  triggerChar: '[[',
   multiWord: true
 };
 const backlinkToSuggestion = backlink => ({
