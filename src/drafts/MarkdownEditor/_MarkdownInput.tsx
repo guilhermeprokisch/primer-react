@@ -6,7 +6,7 @@ import Textarea, { TextareaProps } from '../../Textarea'
 import { Emoji, useEmojiSuggestions } from './suggestions/_useEmojiSuggestions'
 import { Mentionable, useMentionSuggestions } from './suggestions/_useMentionSuggestions'
 import { Reference, useReferenceSuggestions } from './suggestions/_useReferenceSuggestions'
-import { Backlink, useBackLinksSuggestions } from './suggestions/_useBackLinksSuggestions'
+import { Backlink, useBacklinkSuggestions } from './suggestions/_useBacklinkSuggestions'
 import { useRefObjectAsForwardedRef } from '../../hooks'
 import { SuggestionOptions } from './suggestions'
 
@@ -34,7 +34,7 @@ interface MarkdownInputProps extends Omit<TextareaProps, 'onChange'> {
 
 const emptyArray: [] = [] // constant reference to avoid re-running effects
 
-export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>(
+export const MarkdownInput = forwardRef < HTMLTextAreaElement, MarkdownInputProps> (
   (
     {
       value,
@@ -59,8 +59,8 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
     },
     forwardedRef,
   ) => {
-    const [suggestions, setSuggestions] = useState<Suggestions | null>(null)
-    const [event, setEvent] = useState<ShowSuggestionsEvent | null>(null)
+    const [suggestions, setSuggestions] = useState < Suggestions | null > (null)
+    const [event, setEvent] = useState < ShowSuggestionsEvent | null > (null)
 
     const { trigger: emojiTrigger, calculateSuggestions: calculateEmojiSuggestions } = useEmojiSuggestions(
       emojiSuggestions ?? emptyArray,
@@ -72,17 +72,16 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
       referenceSuggestions ?? emptyArray,
     )
 
-    const { trigger: backlinksTrigger, calculateSuggestions: calculateBacklinkSuggestions } = useBackLinksSuggestions(
+    const { trigger: backlinksTrigger, calculateSuggestions: calculateBacklinkSuggestions } = useBacklinkSuggestions(
       backlinkSuggestions ?? emptyArray,
     )
 
-
     const triggers = useMemo(
-      () => [mentionsTrigger, referencesTrigger, emojiTrigger],
-      [mentionsTrigger, referencesTrigger, emojiTrigger],
+      () => [mentionsTrigger, referencesTrigger, emojiTrigger, backlinksTrigger],
+      [mentionsTrigger, referencesTrigger, emojiTrigger, backlinksTrigger],
     )
 
-    const lastEventRef = useRef<ShowSuggestionsEvent | null>(null)
+    const lastEventRef = useRef < ShowSuggestionsEvent | null > (null)
 
     const onHideSuggestions = () => {
       setEvent(null)
@@ -125,7 +124,7 @@ export const MarkdownInput = forwardRef<HTMLTextAreaElement, MarkdownInputProps>
       backlinksTrigger,
     ])
 
-    const ref = useRef<HTMLTextAreaElement>(null)
+    const ref = useRef < HTMLTextAreaElement > (null)
     useRefObjectAsForwardedRef(forwardedRef, ref)
 
     useEffect(() => {

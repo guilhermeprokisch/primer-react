@@ -35,7 +35,7 @@ import { SuggestionOptions } from './suggestions'
 import { Emoji } from './suggestions/_useEmojiSuggestions'
 import { Mentionable } from './suggestions/_useMentionSuggestions'
 import { Reference } from './suggestions/_useReferenceSuggestions'
-import { Backlink } from './suggestions/_useBackLinksSuggestions'
+import { Backlink } from './suggestions/_useBacklinkSuggestions'
 import { isModifierKey } from './utils'
 
 export type MarkdownEditorProps = SxProp & {
@@ -164,7 +164,7 @@ let editorsInPreviewMode: string[] = []
 /**
  * Markdown textarea with controls & keyboard shortcuts.
  */
-const MarkdownEditor = forwardRef < MarkdownEditorHandle, MarkdownEditorProps> (
+const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
   (
     {
       value,
@@ -201,13 +201,13 @@ const MarkdownEditor = forwardRef < MarkdownEditorHandle, MarkdownEditorProps> (
       actions: Actions,
       label: Label,
     })
-    const [uncontrolledViewMode, uncontrolledSetViewMode] = useState < MarkdownViewMode > ('edit')
+    const [uncontrolledViewMode, uncontrolledSetViewMode] = useState<MarkdownViewMode>('edit')
     const [view, setView] =
       controlledViewMode === undefined
         ? [uncontrolledViewMode, uncontrolledSetViewMode]
         : [controlledViewMode, controlledSetViewMode]
 
-    const [html, setHtml] = useState < string | null > (null)
+    const [html, setHtml] = useState<string | null>(null)
     const safeSetHtml = useSafeAsyncCallback(setHtml)
 
     const previewStale = useRef(true)
@@ -227,7 +227,7 @@ const MarkdownEditor = forwardRef < MarkdownEditorHandle, MarkdownEditorProps> (
       if (view === 'preview' && previewStale.current) loadPreview()
     })
 
-    const inputRef = useRef < HTMLTextAreaElement > (null)
+    const inputRef = useRef<HTMLTextAreaElement>(null)
     useImperativeHandle(
       ref,
       () =>
@@ -261,10 +261,10 @@ const MarkdownEditor = forwardRef < MarkdownEditorHandle, MarkdownEditorProps> (
     const listEditor = useListEditing({ emitChange })
     const indenter = useIndenting({ emitChange })
 
-    const formattingToolsRef = useRef < FormattingTools > (null)
+    const formattingToolsRef = useRef<FormattingTools>(null)
 
     // use state instead of ref since we need to recalculate when the element mounts
-    const containerRef = useRef < HTMLDivElement > (null)
+    const containerRef = useRef<HTMLDivElement>(null)
 
     const [condensed, setCondensed] = useState(false)
     const onResize = useCallback(
@@ -289,7 +289,7 @@ const MarkdownEditor = forwardRef < MarkdownEditorHandle, MarkdownEditorProps> (
     const id = useId()
     const descriptionId = `${id}-description`
 
-    const savedRepliesRef = useRef < SavedRepliesHandle > (null)
+    const savedRepliesRef = useRef<SavedRepliesHandle>(null)
     const onSelectSavedReply = (reply: SavedReply) => {
       // need to wait a tick to run after the selectmenu finishes closing
       requestAnimationFrame(() => emitChange(reply.content))

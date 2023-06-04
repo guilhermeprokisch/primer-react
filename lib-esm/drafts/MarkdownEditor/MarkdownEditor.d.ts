@@ -8,7 +8,7 @@ import { SuggestionOptions } from './suggestions';
 import { Emoji } from './suggestions/_useEmojiSuggestions';
 import { Mentionable } from './suggestions/_useMentionSuggestions';
 import { Reference } from './suggestions/_useReferenceSuggestions';
-import { Backlink } from './suggestions/_useBackLinksSuggestions';
+import { Backlink } from './suggestions/_useBacklinkSuggestions';
 export type MarkdownEditorProps = SxProp & {
     /** Current value of the editor as a multiline markdown string. */
     value: string;

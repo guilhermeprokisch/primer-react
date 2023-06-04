@@ -3,7 +3,7 @@ import { TextareaProps } from '../../Textarea';
 import { Emoji } from './suggestions/_useEmojiSuggestions';
 import { Mentionable } from './suggestions/_useMentionSuggestions';
 import { Reference } from './suggestions/_useReferenceSuggestions';
-import { Backlink } from './suggestions/_useBackLinksSuggestions';
+import { Backlink } from './suggestions/_useBacklinkSuggestions';
 import { SuggestionOptions } from './suggestions';
 interface MarkdownInputProps extends Omit<TextareaProps, 'onChange'> {
     value: string;

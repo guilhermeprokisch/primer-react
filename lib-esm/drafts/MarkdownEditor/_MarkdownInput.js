@@ -5,7 +5,7 @@ import InlineAutocomplete from '../InlineAutocomplete/InlineAutocomplete.js';
 import { useEmojiSuggestions } from './suggestions/_useEmojiSuggestions.js';
 import { useMentionSuggestions } from './suggestions/_useMentionSuggestions.js';
 import { useReferenceSuggestions } from './suggestions/_useReferenceSuggestions.js';
-import { useBackLinksSuggestions } from './suggestions/_useBackLinksSuggestions.js';
+import { useBacklinkSuggestions } from './suggestions/_useBacklinkSuggestions.js';
 import { useRefObjectAsForwardedRef } from '../../hooks/useRefObjectAsForwardedRef.js';
 import Textarea from '../../Textarea/Textarea.js';
 
@@ -50,8 +50,8 @@ const MarkdownInput = /*#__PURE__*/forwardRef(({
   const {
     trigger: backlinksTrigger,
     calculateSuggestions: calculateBacklinkSuggestions
-  } = useBackLinksSuggestions(backlinkSuggestions !== null && backlinkSuggestions !== void 0 ? backlinkSuggestions : emptyArray);
-  const triggers = useMemo(() => [mentionsTrigger, referencesTrigger, emojiTrigger], [mentionsTrigger, referencesTrigger, emojiTrigger]);
+  } = useBacklinkSuggestions(backlinkSuggestions !== null && backlinkSuggestions !== void 0 ? backlinkSuggestions : emptyArray);
+  const triggers = useMemo(() => [mentionsTrigger, referencesTrigger, emojiTrigger, backlinksTrigger], [mentionsTrigger, referencesTrigger, emojiTrigger, backlinksTrigger]);
   const lastEventRef = useRef(null);
   const onHideSuggestions = () => {
     setEvent(null);

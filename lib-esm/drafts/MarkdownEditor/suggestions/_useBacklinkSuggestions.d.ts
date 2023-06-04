@@ -5,4 +5,4 @@ export type Backlink = {
     id: string;
     iconHtml?: string;
 };
-export declare const useBackLinksSuggestions: UseSuggestionsHook<Backlink>;
+export declare const useBacklinkSuggestions: UseSuggestionsHook<Backlink>;

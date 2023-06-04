@@ -36,7 +36,7 @@ const scoreSuggestion = (query, backlink) => {
   // can never equal the search string (we don't do filtering if the query is in "#123 some text" form)
   return fzyScore === Infinity ? -Infinity : fzyScore;
 };
-const useBackLinksSuggestions = backlinks => {
+const useBacklinkSuggestions = backlinks => {
   const calculateSuggestions = useMemo(() => {
     const calculator = suggestionsCalculator(backlinks, scoreSuggestion, backlinkToSuggestion);
     return async query => {
@@ -50,4 +50,4 @@ const useBackLinksSuggestions = backlinks => {
   };
 };
 
-export { useBackLinksSuggestions };
+export { useBacklinkSuggestions };

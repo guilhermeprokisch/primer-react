@@ -1,9 +1,9 @@
 import _MarkdownEditor from './MarkdownEditor'
-import {DefaultToolbarButtons, Toolbar, ToolbarButton} from './Toolbar'
-import {ActionButton, Actions} from './Actions'
-import {Label} from './Label'
+import { DefaultToolbarButtons, Toolbar, ToolbarButton } from './Toolbar'
+import { ActionButton, Actions } from './Actions'
+import { Label } from './Label'
 
-export type {MarkdownEditorHandle} from './MarkdownEditor'
+export type { MarkdownEditorHandle } from './MarkdownEditor'
 
 const MarkdownEditor = Object.assign(_MarkdownEditor, {
   /** REQUIRED: An accessible label for the editor. */
@@ -35,9 +35,10 @@ const MarkdownEditor = Object.assign(_MarkdownEditor, {
 })
 export default MarkdownEditor
 
-export type {MarkdownEditorProps} from './MarkdownEditor'
-export type {Emoji} from './suggestions/_useEmojiSuggestions'
-export type {Mentionable} from './suggestions/_useMentionSuggestions'
-export type {Reference} from './suggestions/_useReferenceSuggestions'
-export type {FileUploadResult, FileType} from './_useFileHandling'
-export type {SavedReply} from './_SavedReplies'
+export type { MarkdownEditorProps } from './MarkdownEditor'
+export type { Emoji } from './suggestions/_useEmojiSuggestions'
+export type { Mentionable } from './suggestions/_useMentionSuggestions'
+export type { Reference } from './suggestions/_useReferenceSuggestions'
+export type { Backlink } from './suggestions/_useBacklinkSuggestions'
+export type { FileUploadResult, FileType } from './_useFileHandling'
+export type { SavedReply } from './_SavedReplies'

@@ -51,7 +51,7 @@ const scoreSuggestion = (query: string, backlink: Backlink): number => {
   return fzyScore === Infinity ? -Infinity : fzyScore
 }
 
-export const useBackLinksSuggestions: UseSuggestionsHook<Backlink> = backlinks => {
+export const useBacklinkSuggestions: UseSuggestionsHook<Backlink> = backlinks => {
   const calculateSuggestions = useMemo(() => {
     const calculator = suggestionsCalculator(backlinks, scoreSuggestion, backlinkToSuggestion)
     return async (query: string) => {

@@ -18,7 +18,7 @@ declare const MarkdownEditor: import("react").ForwardRefExoticComponent<import("
     emojiSuggestions?: import("./suggestions").SuggestionOptions<import("./suggestions/_useEmojiSuggestions").Emoji> | undefined;
     mentionSuggestions?: import("./suggestions").SuggestionOptions<import("./suggestions/_useMentionSuggestions").Mentionable> | undefined;
     referenceSuggestions?: import("./suggestions").SuggestionOptions<import("./suggestions/_useReferenceSuggestions").Reference> | undefined;
-    backlinkSuggestions?: import("./suggestions").SuggestionOptions<import("./suggestions/_useBackLinksSuggestions").Backlink> | undefined;
+    backlinkSuggestions?: import("./suggestions").SuggestionOptions<import("./suggestions/_useBacklinkSuggestions").Backlink> | undefined;
     onUploadFile?: ((file: File) => Promise<import("./_useFileHandling").FileUploadResult>) | undefined;
     acceptedFileTypes?: import("./_useFileHandling").FileType[] | undefined;
     monospace?: boolean | undefined;
@@ -84,5 +84,6 @@ export type { MarkdownEditorProps } from './MarkdownEditor';
 export type { Emoji } from './suggestions/_useEmojiSuggestions';
 export type { Mentionable } from './suggestions/_useMentionSuggestions';
 export type { Reference } from './suggestions/_useReferenceSuggestions';
+export type { Backlink } from './suggestions/_useBacklinkSuggestions';
 export type { FileUploadResult, FileType } from './_useFileHandling';
 export type { SavedReply } from './_SavedReplies';
