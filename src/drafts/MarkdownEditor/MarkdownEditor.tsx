@@ -10,32 +10,33 @@ import React, {
 } from 'react'
 import Box from '../../Box'
 import VisuallyHidden from '../../_VisuallyHidden'
-import {useId} from '../../hooks/useId'
-import {useResizeObserver} from '../../hooks/useResizeObserver'
-import {useSlots} from '../../hooks/useSlots'
-import {SxProp} from '../../sx'
+import { useId } from '../../hooks/useId'
+import { useResizeObserver } from '../../hooks/useResizeObserver'
+import { useSlots } from '../../hooks/useSlots'
+import { SxProp } from '../../sx'
 import MarkdownViewer from '../MarkdownViewer'
-import {useIgnoreKeyboardActionsWhileComposing} from '../hooks/useIgnoreKeyboardActionsWhileComposing'
-import {useSafeAsyncCallback} from '../hooks/useSafeAsyncCallback'
-import {useSyntheticChange} from '../hooks/useSyntheticChange'
-import {FileType} from '../hooks/useUnifiedFileSelect'
-import {Actions} from './Actions'
-import {Label} from './Label'
-import {CoreToolbar, DefaultToolbarButtons, Toolbar} from './Toolbar'
-import {Footer} from './_Footer'
-import {FormattingTools} from './_FormattingTools'
-import {MarkdownEditorContext} from './_MarkdownEditorContext'
-import {MarkdownInput} from './_MarkdownInput'
-import {SavedRepliesContext, SavedRepliesHandle, SavedReply} from './_SavedReplies'
-import {MarkdownViewMode, ViewSwitch} from './_ViewSwitch'
-import {FileUploadResult, useFileHandling} from './_useFileHandling'
-import {useIndenting} from './_useIndenting'
-import {useListEditing} from './_useListEditing'
-import {SuggestionOptions} from './suggestions'
-import {Emoji} from './suggestions/_useEmojiSuggestions'
-import {Mentionable} from './suggestions/_useMentionSuggestions'
-import {Reference} from './suggestions/_useReferenceSuggestions'
-import {isModifierKey} from './utils'
+import { useIgnoreKeyboardActionsWhileComposing } from '../hooks/useIgnoreKeyboardActionsWhileComposing'
+import { useSafeAsyncCallback } from '../hooks/useSafeAsyncCallback'
+import { useSyntheticChange } from '../hooks/useSyntheticChange'
+import { FileType } from '../hooks/useUnifiedFileSelect'
+import { Actions } from './Actions'
+import { Label } from './Label'
+import { CoreToolbar, DefaultToolbarButtons, Toolbar } from './Toolbar'
+import { Footer } from './_Footer'
+import { FormattingTools } from './_FormattingTools'
+import { MarkdownEditorContext } from './_MarkdownEditorContext'
+import { MarkdownInput } from './_MarkdownInput'
+import { SavedRepliesContext, SavedRepliesHandle, SavedReply } from './_SavedReplies'
+import { MarkdownViewMode, ViewSwitch } from './_ViewSwitch'
+import { FileUploadResult, useFileHandling } from './_useFileHandling'
+import { useIndenting } from './_useIndenting'
+import { useListEditing } from './_useListEditing'
+import { SuggestionOptions } from './suggestions'
+import { Emoji } from './suggestions/_useEmojiSuggestions'
+import { Mentionable } from './suggestions/_useMentionSuggestions'
+import { Reference } from './suggestions/_useReferenceSuggestions'
+import { Backlink } from './suggestions/_useBackLinksSuggestions'
+import { isModifierKey } from './utils'
 
 export type MarkdownEditorProps = SxProp & {
   /** Current value of the editor as a multiline markdown string. */
@@ -97,6 +98,12 @@ export type MarkdownEditorProps = SxProp & {
    */
   referenceSuggestions?: SuggestionOptions<Reference>
   /**
+   * Array of all possible backlinks to suggest. Leave `undefined` to disable `[`-reference autocomplete.
+   * For lazy-loading suggestions, an async function can be provided instead.
+   */
+  backlinkSuggestions?: SuggestionOptions<Backlink>
+
+  /**
    * Uploads a file to a hosting service and returns the URL. If not provided, file uploads
    * will be disabled.
    */
@@ -141,7 +148,7 @@ export interface MarkdownEditorHandle {
   [handleBrand]: undefined
 }
 
-const a11yOnlyStyle = {clipPath: 'Circle(0)', position: 'absolute'} as const
+const a11yOnlyStyle = { clipPath: 'Circle(0)', position: 'absolute' } as const
 
 const CONDENSED_WIDTH_THRESHOLD = 675
 
@@ -157,7 +164,7 @@ let editorsInPreviewMode: string[] = []
 /**
  * Markdown textarea with controls & keyboard shortcuts.
  */
-const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
+const MarkdownEditor = forwardRef < MarkdownEditorHandle, MarkdownEditorProps> (
   (
     {
       value,
@@ -177,6 +184,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
       emojiSuggestions,
       mentionSuggestions,
       referenceSuggestions,
+      backlinkSuggestions,
       onUploadFile,
       acceptedFileTypes,
       monospace = false,
@@ -193,13 +201,13 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
       actions: Actions,
       label: Label,
     })
-    const [uncontrolledViewMode, uncontrolledSetViewMode] = useState<MarkdownViewMode>('edit')
+    const [uncontrolledViewMode, uncontrolledSetViewMode] = useState < MarkdownViewMode > ('edit')
     const [view, setView] =
       controlledViewMode === undefined
         ? [uncontrolledViewMode, uncontrolledSetViewMode]
         : [controlledViewMode, controlledSetViewMode]
 
-    const [html, setHtml] = useState<string | null>(null)
+    const [html, setHtml] = useState < string | null > (null)
     const safeSetHtml = useSafeAsyncCallback(setHtml)
 
     const previewStale = useRef(true)
@@ -219,14 +227,14 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
       if (view === 'preview' && previewStale.current) loadPreview()
     })
 
-    const inputRef = useRef<HTMLTextAreaElement>(null)
+    const inputRef = useRef < HTMLTextAreaElement > (null)
     useImperativeHandle(
       ref,
       () =>
-        ({
-          focus: opts => inputRef.current?.focus(opts),
-          scrollIntoView: opts => containerRef.current?.scrollIntoView(opts),
-        } as MarkdownEditorHandle),
+      ({
+        focus: opts => inputRef.current?.focus(opts),
+        scrollIntoView: opts => containerRef.current?.scrollIntoView(opts),
+      } as MarkdownEditorHandle),
     )
 
     const inputHeight = useRef(0)
@@ -239,7 +247,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
       [onChange],
     )
 
-    const emitChange = useSyntheticChange({inputRef, fallbackEventHandler: onInputChange})
+    const emitChange = useSyntheticChange({ inputRef, fallbackEventHandler: onInputChange })
 
     const fileHandler = useFileHandling({
       emitChange,
@@ -250,13 +258,13 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
       acceptedFileTypes,
     })
 
-    const listEditor = useListEditing({emitChange})
-    const indenter = useIndenting({emitChange})
+    const listEditor = useListEditing({ emitChange })
+    const indenter = useIndenting({ emitChange })
 
-    const formattingToolsRef = useRef<FormattingTools>(null)
+    const formattingToolsRef = useRef < FormattingTools > (null)
 
     // use state instead of ref since we need to recalculate when the element mounts
-    const containerRef = useRef<HTMLDivElement>(null)
+    const containerRef = useRef < HTMLDivElement > (null)
 
     const [condensed, setCondensed] = useState(false)
     const onResize = useCallback(
@@ -281,12 +289,12 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
     const id = useId()
     const descriptionId = `${id}-description`
 
-    const savedRepliesRef = useRef<SavedRepliesHandle>(null)
+    const savedRepliesRef = useRef < SavedRepliesHandle > (null)
     const onSelectSavedReply = (reply: SavedReply) => {
       // need to wait a tick to run after the selectmenu finishes closing
       requestAnimationFrame(() => emitChange(reply.content))
     }
-    const savedRepliesContext = savedReplies ? {savedReplies, onSelect: onSelectSavedReply, ref: savedRepliesRef} : null
+    const savedRepliesContext = savedReplies ? { savedReplies, onSelect: onSelectSavedReply, ref: savedRepliesRef } : null
 
     const inputCompositionProps = useIgnoreKeyboardActionsWhileComposing(
       (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -350,7 +358,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
 
     // If we don't memoize the context object, every child will rerender on every render even if memoized
     const context = useMemo(
-      () => ({disabled, formattingToolsRef, condensed, required}),
+      () => ({ disabled, formattingToolsRef, condensed, required }),
       [disabled, formattingToolsRef, condensed, required],
     )
 
@@ -360,10 +368,10 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
         <fieldset
           aria-disabled={disabled /* if we set disabled={true}, we can't enable the buttons that should be enabled */}
           aria-describedby={describedBy ? `${descriptionId} ${describedBy}` : descriptionId}
-          style={{appearance: 'none', border: 'none', minInlineSize: 'auto'}}
+          style={{ appearance: 'none', border: 'none', minInlineSize: 'auto' }}
         >
           <FormattingTools ref={formattingToolsRef} forInputId={id} />
-          <div style={{display: 'none'}}>{childrenWithoutSlots}</div>
+          <div style={{ display: 'none' }}>{childrenWithoutSlots}</div>
 
           {slots.label}
 
@@ -390,7 +398,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
               {view === 'preview' ? ' preview mode selected.' : ' edit mode selected.'}
             </VisuallyHidden>
 
-            <Box sx={{display: 'flex', pb: 2, gap: 2, justifyContent: 'space-between'}} as="header">
+            <Box sx={{ display: 'flex', pb: 2, gap: 2, justifyContent: 'space-between' }} as="header">
               <ViewSwitch
                 selectedView={view}
                 onViewSelect={setView}
@@ -398,7 +406,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
                 onLoadPreview={loadPreview}
               />
 
-              <Box sx={{display: 'flex'}}>
+              <Box sx={{ display: 'flex' }}>
                 <SavedRepliesContext.Provider value={savedRepliesContext}>
                   {view === 'edit' &&
                     (slots.toolbar ?? (
@@ -416,6 +424,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
               emojiSuggestions={emojiSuggestions}
               mentionSuggestions={mentionSuggestions}
               referenceSuggestions={referenceSuggestions}
+              backlinkSuggestions={backlinkSuggestions}
               disabled={disabled}
               placeholder={placeholder}
               id={id}
@@ -449,7 +458,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
               >
                 <h2 style={a11yOnlyStyle}>Rendered Markdown Preview</h2>
                 <MarkdownViewer
-                  dangerousRenderedHTML={{__html: html || 'Nothing to preview'}}
+                  dangerousRenderedHTML={{ __html: html || 'Nothing to preview' }}
                   loading={html === null}
                   openLinksInNewTab
                 />
