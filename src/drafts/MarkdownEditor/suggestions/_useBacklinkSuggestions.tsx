@@ -18,7 +18,7 @@ const trigger: Trigger = {
 }
 
 const backlinkToSuggestion = (backlink: Backlink): Suggestion => ({
-  value: backlink.titleText,
+  value: ` ${backlink.titleText} ]]`,
   render: props => (
     <ActionList.Item {...props}>
       {backlink.iconHtml && (

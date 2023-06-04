@@ -9,7 +9,7 @@ const trigger = {
   multiWord: true
 };
 const backlinkToSuggestion = backlink => ({
-  value: backlink.titleText,
+  value: ` ${backlink.titleText} ]]`,
   render: props => /*#__PURE__*/React__default.createElement(ActionList.Item, props, backlink.iconHtml && /*#__PURE__*/React__default.createElement(ActionList.LeadingVisual, null, /*#__PURE__*/React__default.createElement("span", {
     dangerouslySetInnerHTML: {
       __html: backlink.iconHtml
